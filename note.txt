@@ -1,0 +1,4 @@
+correct image orientation
+format image 
+ocr
+post-processing 
