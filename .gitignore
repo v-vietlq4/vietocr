@@ -34,5 +34,6 @@ test_tipc/web/models/
 test_tipc/web/node_modules/
 
 /data
-dataset
+datasets
 downloads 
+customdata

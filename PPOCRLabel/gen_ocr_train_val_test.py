@@ -9,10 +9,10 @@ import argparse
 def isCreateOrDeleteFolder(path, flag):
     flagPath = os.path.join(path, flag)
 
-    if os.path.exists(flagPath):
-        shutil.rmtree(flagPath)
+    # if os.path.exists(flagPath):
+    #     shutil.rmtree(flagPath)
 
-    os.makedirs(flagPath)
+    os.makedirs(flagPath, exist_ok=True)
     flagAbsPath = os.path.abspath(flagPath)
     return flagAbsPath
 
@@ -39,7 +39,8 @@ def splitTrainVal(root, absTrainRootPath, absValRootPath, absTestRootPath, train
         if flag == "det":
             imagePath = os.path.join(dataAbsPath, imageName)
         elif flag == "rec":
-            imagePath = os.path.join(dataAbsPath, "{}\\{}".format(args.recImageDirName, imageName))
+            imagePath = os.path.join(dataAbsPath, "{}\\{}".format(
+                args.recImageDirName, imageName))
 
         # 按预设的比例划分训练集、验证集、测试集
         trainValTestRatio = args.trainValTestRatio.split(":")
@@ -75,22 +76,34 @@ def genDetRecTrainVal(args):
     recAbsValRootPath = isCreateOrDeleteFolder(args.recRootPath, "val")
     recAbsTestRootPath = isCreateOrDeleteFolder(args.recRootPath, "test")
 
-    removeFile(os.path.join(args.detRootPath, "train.txt"))
-    removeFile(os.path.join(args.detRootPath, "val.txt"))
-    removeFile(os.path.join(args.detRootPath, "test.txt"))
-    removeFile(os.path.join(args.recRootPath, "train.txt"))
-    removeFile(os.path.join(args.recRootPath, "val.txt"))
-    removeFile(os.path.join(args.recRootPath, "test.txt"))
+    # removeFile(os.path.join(args.detRootPath, "train.txt"))
+    # removeFile(os.path.join(args.detRootPath, "val.txt"))
+    # removeFile(os.path.join(args.detRootPath, "test.txt"))
+    # removeFile(os.path.join(args.recRootPath, "train.txt"))
+    # removeFile(os.path.join(args.recRootPath, "val.txt"))
+    # removeFile(os.path.join(args.recRootPath, "test.txt"))
 
-    detTrainTxt = open(os.path.join(args.detRootPath, "train.txt"), "a", encoding="UTF-8")
-    detValTxt = open(os.path.join(args.detRootPath, "val.txt"), "a", encoding="UTF-8")
-    detTestTxt = open(os.path.join(args.detRootPath, "test.txt"), "a", encoding="UTF-8")
-    recTrainTxt = open(os.path.join(args.recRootPath, "train.txt"), "a", encoding="UTF-8")
-    recValTxt = open(os.path.join(args.recRootPath, "val.txt"), "a", encoding="UTF-8")
-    recTestTxt = open(os.path.join(args.recRootPath, "test.txt"), "a", encoding="UTF-8")
+    detTrainTxt = open(os.path.join(
+        args.detRootPath, "train.txt"), "a", encoding="UTF-8")
+    detValTxt = open(os.path.join(args.detRootPath,
+                     "val.txt"), "a", encoding="UTF-8")
+    detTestTxt = open(os.path.join(args.detRootPath,
+                      "test.txt"), "a", encoding="UTF-8")
+    recTrainTxt = open(os.path.join(
+        args.recRootPath, "train.txt"), "a", encoding="UTF-8")
+    recValTxt = open(os.path.join(args.recRootPath,
+                     "val.txt"), "a", encoding="UTF-8")
+    recTestTxt = open(os.path.join(args.recRootPath,
+                      "test.txt"), "a", encoding="UTF-8")
 
-    splitTrainVal(args.datasetRootPath, detAbsTrainRootPath, detAbsValRootPath, detAbsTestRootPath, detTrainTxt, detValTxt,
-                  detTestTxt, "det")
+    for root, dirs, files in os.walk('/home/vietlq4/PaddleOCR/data/', topdown=True):
+        for dir in dirs:
+            datasetRootPath = os.path.join(root, dir)
+            try:
+                splitTrainVal(datasetRootPath, detAbsTrainRootPath, detAbsValRootPath, detAbsTestRootPath, detTrainTxt, detValTxt,
+                              detTestTxt, "det")
+            except OSError as e:
+                print(e)
 
     for root, dirs, files in os.walk(args.datasetRootPath):
         for dir in dirs:
@@ -100,7 +113,6 @@ def genDetRecTrainVal(args):
             else:
                 continue
         break
-
 
 
 if __name__ == "__main__":
@@ -116,7 +128,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--datasetRootPath",
         type=str,
-        default="../train_data/",
+        default="/home/vietlq4/PaddleOCR/data/iphone/facare/IMG_0948",
         help="path to the dataset marked by ppocrlabel, E.g, dataset folder named 1,2,3..."
     )
     parser.add_argument(

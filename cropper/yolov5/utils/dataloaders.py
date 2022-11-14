@@ -33,6 +33,7 @@ from utils.general import (DATASETS_DIR, LOGGER, NUM_THREADS, check_dataset, che
                            cv2, is_colab, is_kaggle, segments2boxes, unzip_file, xyn2xy, xywh2xyxy, xywhn2xyxy,
                            xyxy2xywhn)
 from utils.torch_utils import torch_distributed_zero_first
+from pathlib import Path
 
 # Parameters
 HELP_URL = 'See https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
@@ -242,7 +243,7 @@ class LoadImages:
         for p in sorted(path) if isinstance(path, (list, tuple)) else [path]:
             p = str(Path(p).resolve())
             if '*' in p:
-                files.extend(sorted(glob.glob(p, recursive=True)))  # glob
+                files.extend(sorted(glob.iglob(p, recursive=True)))  # glob
             elif os.path.isdir(p):
                 files.extend(sorted(glob.glob(os.path.join(p, '*.*'))))  # dir
             elif os.path.isfile(p):
@@ -253,6 +254,7 @@ class LoadImages:
         images = [x for x in files if x.split('.')[-1].lower() in IMG_FORMATS]
         videos = [x for x in files if x.split('.')[-1].lower() in VID_FORMATS]
         ni, nv = len(images), len(videos)
+        print(ni)
 
         self.img_size = img_size
         self.stride = stride
@@ -304,6 +306,7 @@ class LoadImages:
             im0 = cv2.imread(path)  # BGR
             assert im0 is not None, f'Image Not Found {path}'
             s = f'image {self.count}/{self.nf} {path}: '
+            print(s)
 
         if self.transforms:
             im = self.transforms(im0)  # transforms
